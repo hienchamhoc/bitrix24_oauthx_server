@@ -1,3 +1,6 @@
 node_modules/
 build/
 .env
+
+data/token/*
+!data/token/folder-holder.txt
