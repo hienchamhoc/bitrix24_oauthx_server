@@ -44,11 +44,11 @@ const addressApi = {
 
     return response.data.result;
   },
-  update: async (token: string, address: Address) => {
+  update: async (token: string, requisiteId: number, address: Address) => {
     const response = oauth2Axios.post(
-      "rest/crm.address.update.json?auth=" + token + "&id=" + address.TYPE_ID,
+      "rest/crm.address.update.json?auth=" + token,
       {
-        fields: address,
+        fields: { ...address, ENTITY_TYPE_ID: 8, ENTITY_ID: requisiteId },
       }
     );
     return response;

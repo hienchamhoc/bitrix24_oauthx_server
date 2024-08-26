@@ -23,7 +23,7 @@ interface Contact {
   ID: number;
   NAME: string;
   POST: string | undefined;
-  BIRTHDAY: Date | undefined;
+  BIRTHDATE: Date | undefined;
   PHONE: Phone[] | undefined;
   EMAIL: Email[] | undefined;
   WEB: Web[] | undefined;

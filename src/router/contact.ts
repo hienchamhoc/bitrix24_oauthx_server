@@ -13,5 +13,5 @@ export const router = Router();
 router.get("/", checkToken, getListContact);
 router.get("/get", checkToken, getContact);
 router.post("/add", checkToken, addContact);
-router.post("/update", checkToken, updateContact);
-router.get("/delete", checkToken, deleteContact);
+router.put("/update", checkToken, updateContact);
+router.post("/delete", checkToken, deleteContact);

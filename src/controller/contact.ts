@@ -6,6 +6,7 @@ import { Requisite } from "../type/requisite";
 import addressApi from "../api/address";
 import { Address } from "../type/address";
 import bankdetailApi from "../api/bankdetail";
+import { AxiosError } from "axios";
 
 async function getListContact(req: Request, res: Response) {
   try {
@@ -49,6 +50,7 @@ async function getContact(req: Request, res: Response) {
         access_token,
         requisites[rqIndex].ID
       );
+
       const bankdetail = BankdetailRes.data.result;
       requisites[rqIndex].BANKDETAILS = bankdetail;
     }
@@ -73,65 +75,55 @@ async function addContact(req: Request, res: Response) {
     if (!contactReq.NAME) {
       throw new Error("Name is not defined");
     }
-    //check requisite property
-    if (!contactReq.REQUISITES) {
-      throw new Error("Requisites is not defined");
-    } else {
-      for (let rqIndex = 0; rqIndex < contactReq.REQUISITES.length; rqIndex++) {
-        if (!contactReq.REQUISITES[rqIndex].ADDRESSES) {
-          throw new Error("Addresses is not defined");
-        }
-        if (!contactReq.REQUISITES[rqIndex].BANKDETAILS) {
-          throw new Error("Bankdetail is not defined");
-        }
-      }
-    }
     const access_token = res.locals.access_token;
-
     // add contact
     const contactId = await contactApi.add(access_token, contactReq);
 
-    // loop each requisite
-    for (let rqIndex = 0; rqIndex < contactReq.REQUISITES.length; rqIndex++) {
-      //add requisite
-      const requisiteId = await requisiteApi.add(
-        access_token,
-        +contactId,
-        contactReq.REQUISITES[rqIndex]
-      );
-      // loop each address
-      for (
-        let addrIndex = 0;
-        addrIndex < contactReq.REQUISITES[rqIndex].ADDRESSES!.length;
-        addrIndex++
-      ) {
-        //add address
-        const addressId = await addressApi.add(
+    if (contactReq.REQUISITES) {
+      // loop each requisite
+      for (let rqIndex = 0; rqIndex < contactReq.REQUISITES.length; rqIndex++) {
+        //add requisite
+        const requisiteId = await requisiteApi.add(
           access_token,
-          +requisiteId,
-          contactReq.REQUISITES[rqIndex].ADDRESSES![addrIndex]
+          +contactId,
+          contactReq.REQUISITES[rqIndex]
         );
-      }
-      // loop each bank detail
-      for (
-        let bankIndex = 0;
-        bankIndex < contactReq.REQUISITES[rqIndex].BANKDETAILS!.length;
-        bankIndex++
-      ) {
-        //add bank detail
-        const bankdetailId = await bankdetailApi.add(
-          access_token,
-          +requisiteId,
-          contactReq.REQUISITES[rqIndex].BANKDETAILS![bankIndex]
-        );
+        if (contactReq.REQUISITES[rqIndex].ADDRESSES) {
+          // loop each address
+          for (
+            let addrIndex = 0;
+            addrIndex < contactReq.REQUISITES[rqIndex].ADDRESSES!.length;
+            addrIndex++
+          ) {
+            //add address
+            const addressId = await addressApi.add(
+              access_token,
+              +requisiteId,
+              contactReq.REQUISITES[rqIndex].ADDRESSES![addrIndex]
+            );
+          }
+        }
+        if (contactReq.REQUISITES[rqIndex].BANKDETAILS) {
+          // loop each bank detail
+          for (
+            let bankIndex = 0;
+            bankIndex < contactReq.REQUISITES[rqIndex].BANKDETAILS!.length;
+            bankIndex++
+          ) {
+            //add bank detail
+            const bankdetailId = await bankdetailApi.add(
+              access_token,
+              +requisiteId,
+              contactReq.REQUISITES[rqIndex].BANKDETAILS![bankIndex]
+            );
+          }
+        }
       }
     }
 
     res.json({ id: contactId });
   } catch (err: any) {
     if (err.response) {
-      console.log(err.response.config.url);
-
       const statusCode = err.response.status;
       res.status(statusCode).json(err.response.data);
     } else {
@@ -174,31 +166,56 @@ async function updateContact(req: Request, res: Response) {
             );
             if (found) {
               //if address already exists, update it
-              const update = await addressApi.update(access_token, address);
+              if (address.ADDRESS_1 || address.ADDRESS_2 || address.TYPE_ID) {
+                const update = await addressApi.update(
+                  access_token,
+                  contactReq.REQUISITES![rqIndex].ID,
+                  address
+                );
+              }
             } else {
               //if address does not existe, add it
-              const add = await addressApi.add(
-                access_token,
-                contactReq.REQUISITES![rqIndex].ID,
-                address
-              );
+              if (address.ADDRESS_1 || address.ADDRESS_2 || address.TYPE_ID) {
+                const add = await addressApi.add(
+                  access_token,
+                  contactReq.REQUISITES![rqIndex].ID,
+                  address
+                );
+              }
             }
           });
           contactReq.REQUISITES![rqIndex].BANKDETAILS?.map((bankdetail) => {
             if (bankdetail.ID) {
               //if address already exists, update it
-              const update = bankdetailApi.update(access_token, bankdetail);
+              if (
+                bankdetail.RQ_ACC_NUM ||
+                bankdetail.RQ_BANK_ADDR ||
+                bankdetail.RQ_BANK_NAME
+              ) {
+                const update = bankdetailApi.update(
+                  access_token,
+                  contactReq.REQUISITES![rqIndex].ID,
+                  bankdetail
+                );
+              }
             } else {
               //if address does not exists, add it
-              const add = bankdetailApi.add(
-                access_token,
-                contactReq.REQUISITES![rqIndex].ID,
-                bankdetail
-              );
+              if (
+                bankdetail.RQ_ACC_NUM ||
+                bankdetail.RQ_BANK_ADDR ||
+                bankdetail.RQ_BANK_NAME
+              ) {
+                const add = bankdetailApi.add(
+                  access_token,
+                  contactReq.REQUISITES![rqIndex].ID,
+                  bankdetail
+                );
+              }
             }
           });
         } else {
           //add requisite
+
           const requisiteId = await requisiteApi.add(
             access_token,
             +id,

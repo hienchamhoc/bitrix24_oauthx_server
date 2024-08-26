@@ -37,6 +37,7 @@ const requisiteApi = {
           ENTITY_TYPE_ID: 3,
           ENTITY_ID: contactId,
           PRESET_ID: 3,
+          NAME: "Person",
         },
       }
     );
@@ -55,6 +56,7 @@ const requisiteApi = {
     const response = oauth2Axios.post(
       "rest/crm.requisite.delete.json?auth=" + token + "&id=" + id
     );
+
     return response;
   },
 };

@@ -4,4 +4,4 @@ import { deleteRequisite } from "../controller/requisite";
 
 export const router = Router();
 
-router.delete("/delete", checkToken, deleteRequisite);
+router.post("/delete", checkToken, deleteRequisite);

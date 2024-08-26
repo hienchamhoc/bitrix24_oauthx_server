@@ -4,6 +4,7 @@ interface Bankdetail {
   NAME: string;
   RQ_BANK_NAME: string;
   RQ_BANK_ADDR: string;
+  RQ_ACC_NUM: string;
 }
 
 export { Bankdetail };

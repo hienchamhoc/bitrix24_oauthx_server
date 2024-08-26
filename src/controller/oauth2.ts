@@ -15,7 +15,9 @@ async function getToken(req: Request, res: Response) {
     );
     if (response.status == 200) {
       writeToken(response.data.user_id, JSON.stringify(response.data));
-      res.status(200).json(response.data);
+      res
+        .status(200)
+        .json({ userId: response.data.user_id, message: "Login successfully" });
     }
   } catch (err: any) {
     if (err.response.status) {
@@ -52,7 +54,10 @@ async function renewToken(req: Request, res: Response) {
             throw new Error("Error while writing file");
           }
         });
-        res.status(200).json(response.data);
+        res.status(200).json({
+          userId: response.data.user_id,
+          message: "Renew token successfully",
+        });
       } else {
         throw new Error("Error while renew token");
       }

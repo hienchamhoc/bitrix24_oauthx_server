@@ -6,13 +6,14 @@ import { initAxios } from "../api/axios";
 
 const corsOptions = {
   origin: "*",
-  optionsSuccessStatus: 200,
-  exposedHeaders: "token",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  // preflightContinue: false,
+  // optionsSuccessStatus: 204,
 };
 
 export async function config(app: Router) {
-  await initAxios();
   await app.use(cors(corsOptions));
   await app.use(bodyParser.json());
   await app.use("/api", router);
+  await initAxios();
 }

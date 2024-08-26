@@ -4,4 +4,4 @@ import { delelteBankdetail } from "../controller/bankdetail";
 
 export const router = Router();
 
-router.delete("/delete", checkToken, delelteBankdetail);
+router.post("/delete", checkToken, delelteBankdetail);

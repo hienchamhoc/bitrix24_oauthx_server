@@ -9,7 +9,14 @@ const bankdetailApi = {
         filter: {
           ENTITY_ID: requisiteId,
         },
-        select: ["ID", "NAME", "ENTITY_ID", "RQ_BANK_NAME", "RQ_BANK_ADDR"],
+        select: [
+          "ID",
+          "NAME",
+          "ENTITY_ID",
+          "RQ_BANK_NAME",
+          "RQ_BANK_ADDR",
+          "RQ_ACC_NUM",
+        ],
       }
     );
     return response;
@@ -30,14 +37,18 @@ const bankdetailApi = {
 
     return response.data.result;
   },
-  update: async (token: string, bankdetail: Bankdetail) => {
+  update: async (
+    token: string,
+    requisiteId: number,
+    bankdetail: Bankdetail
+  ) => {
     const response = oauth2Axios.post(
       "rest/crm.requisite.bankdetail.update.json?auth=" +
         token +
         "&id=" +
         bankdetail.ID,
       {
-        fields: bankdetail,
+        fields: { ...bankdetail, ENTITY_TYPE_ID: 8, ENTITY_ID: requisiteId },
       }
     );
     return response;
