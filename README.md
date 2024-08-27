@@ -1,6 +1,6 @@
 ## Getting Started
 
-First, create local application on bitrix24 with your handle path:[http://localhost:3000/home](http://localhost:3000/home) then copy bitrix24 domain, client id and client secret into .env file:
+First, create local application on bitrix24 with `Your handler path*`:[http://localhost:3000/home](http://localhost:3000/home) then copy bitrix24 domain, client id and client secret into .env file:
 
 ```bash
 BITRIX24_DOMAIN={BITRIX24_DOMAIN}
